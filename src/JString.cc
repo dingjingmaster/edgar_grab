@@ -1,5 +1,5 @@
 /*************************************************************************
-> FileName: strings.cc
+> FileName: JString.cc
 > Author  : DingJing
 > Mail    : dingjing@live.cn
 > Created Time: 2018年01月30日 星期二 16时11分55秒
@@ -7,7 +7,7 @@
 #include <iostream>
 #include <string.h>
 #include <assert.h>
-#include "strings.h"
+#include "JString.h"
 
 EdgarString::EdgarString(unsigned int size) {
     this ->size = size > 0 ? size : STRING_SIZE;

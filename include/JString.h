@@ -1,12 +1,12 @@
 /*************************************************************************
-> FileName: strings.h
+> FileName: JString.h
 > Author  : DingJing
 > Mail    : dingjing@live.cn
 > Created Time: 2018年01月30日 星期二 15时56分08秒
  ************************************************************************/
 
-#ifndef _STRINGS_H
-#define _STRINGS_H
+#ifndef _JSTRING_H
+#define _JSTRING_H
 #include <iostream>
 
 #define     STRING_SIZE     1024                                        // 默认内存大小

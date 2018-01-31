@@ -6,7 +6,7 @@
  ************************************************************************/
 #include <iostream>
 #include <stdio.h>
-#include "strings.h"
+#include "JString.h"
 int main() {
     char* a = "0123456789";
     EdgarString tes1;
