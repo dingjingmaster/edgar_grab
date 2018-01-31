@@ -85,9 +85,9 @@ void EdgarString::setChar(unsigned int i, char c) {
     str[i] = c;
 }
 
-char EdgarString::operator[] (unsigned int i) {
+char& EdgarString::operator[](unsigned int i) {
     assert(i <= pos);
-    return str[i];
+    return this ->str[i];
 }
 
 EdgarString::~EdgarString() {

@@ -7,6 +7,7 @@
 
 #ifndef _STRINGS_H
 #define _STRINGS_H
+#include <iostream>
 
 #define     STRING_SIZE     1024                                        // 默认内存大小
 #define     STRING_STEP     2                                           // 扩展倍数
@@ -21,7 +22,7 @@ public:
     void addString(char* s);
     char* copyString();
     unsigned int len();
-    char operator [] (unsigned int i);
+    char& operator[](unsigned int i);
     ~EdgarString();
 
 private:
