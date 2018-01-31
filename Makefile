@@ -8,21 +8,21 @@ TEST = $(CUR)/test/
 SRC = $(wildcard src/*.cc)
 OBJ = $(patsubst %.cc, %.o, $(SRC))
 
-
+STRING = $(CUR)/test/strings_test.o
+HASH = $(CUR)
 
 TESTSRC = $(wildcard test/*.cc)
 TESTOBJ = $(patsubst %.cc, %.o, $(TESTSRC))
-STRINGTEST = $(CUR)/test/string_test
-
-test = $(STRINGTEST)
+TESTTARGET = $(patsubst %.cc, %.run, $(TESTSRC))
 
 all:
 
-test : $(test)
 
-# 测试相关
-$(STRINGTEST) : $(OBJ) $(TESTOBJ)
-	$(CPP) -o $@ $^ $(HEAD)
+test : $(TESTTARGET)
+
+
+%.run : %.o $(OBJ)
+	$(CPP) -o $@ $^
 
 %.o : %.cc
 	$(CPP) -o $@ -c $< $(HEAD)
@@ -31,6 +31,6 @@ $(STRINGTEST) : $(OBJ) $(TESTOBJ)
 clean: 
 	-rm -fr $(OBJ)
 	-rm -fr $(TESTOBJ)
-	-rm -fr $(test)
+	-rm -fr $(TESTTARGET)
 
 .PHONY : clean

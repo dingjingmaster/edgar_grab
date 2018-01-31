@@ -9,14 +9,14 @@
 #include <assert.h>
 #include "JString.h"
 
-EdgarString::EdgarString(unsigned int size) {
+JString::JString(unsigned int size) {
     this ->size = size > 0 ? size : STRING_SIZE;
     this ->str = new char[this ->size];
     this ->pos = 0;
     this ->str[0] = 0;
 }
 
-EdgarString::EdgarString(char* str) {
+JString::JString(char* str) {
     size = STRING_SIZE;
     unsigned int msize = strlen(str);
     while(msize >= size) {
@@ -28,7 +28,7 @@ EdgarString::EdgarString(char* str) {
     this ->str[msize] = 0;
 }
 
-void EdgarString::recycle(unsigned int size) {
+void JString::recycle(unsigned int size) {
     if(this ->size > size) {
         delete[] str;
         str = new char[size];
@@ -38,7 +38,7 @@ void EdgarString::recycle(unsigned int size) {
     str[0] = 0;
 }
 
-void EdgarString::addChar(char c) {
+void JString::addChar(char c) {
     str[pos] = c;
     ++ pos;
     if (pos >= size) {
@@ -51,7 +51,7 @@ void EdgarString::addChar(char c) {
     str[pos] = 0;
 }
 
-void EdgarString::addString(char* s) {
+void JString::addString(char* s) {
     unsigned int ssize = strlen(s);
     unsigned int tsize = size;
     unsigned int msize = ssize + pos;
@@ -70,26 +70,26 @@ void EdgarString::addString(char* s) {
     str[pos] = 0;
 }
 
-char* EdgarString::copyString() {
+char* JString::copyString() {
     char* tmp = new char[pos + 1];
     memcpy(tmp, str, pos);
     tmp[pos] = 0;
     return tmp;
 }
 
-unsigned int EdgarString::len() {
+unsigned int JString::len() {
     return pos;
 }
 
-void EdgarString::setChar(unsigned int i, char c) {
+void JString::setChar(unsigned int i, char c) {
     str[i] = c;
 }
 
-char& EdgarString::operator[](unsigned int i) {
+char& JString::operator[](unsigned int i) {
     assert(i <= pos);
     return this ->str[i];
 }
 
-EdgarString::~EdgarString() {
+JString::~JString() {
     delete[] str;
 }

@@ -12,10 +12,10 @@
 #define     STRING_SIZE     1024                                        // 默认内存大小
 #define     STRING_STEP     2                                           // 扩展倍数
 
-class EdgarString {
+class JString {
 public:
-    EdgarString(unsigned int size = STRING_SIZE);
-    EdgarString(char* str);
+    JString(unsigned int size = STRING_SIZE);
+    JString(char* str);
     void recycle(unsigned int size);                                    // 最多只分配size内存,其它回收,且删除数据
     void addChar(char c);
     void setChar(unsigned int i, char c);
@@ -23,7 +23,7 @@ public:
     char* copyString();
     unsigned int len();
     char& operator[](unsigned int i);
-    ~EdgarString();
+    ~JString();
 
 private:
     char* str;                                                          // 头指针

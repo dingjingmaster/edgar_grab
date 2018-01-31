@@ -6,19 +6,9 @@
  ************************************************************************/
 #include <iostream>
 #include <stdio.h>
-#include "JString.h"
+#include "JHash.h"
 int main() {
-    char* a = "0123456789";
-    JString tes1;
-    JString tes4(a);
-
-    puts(tes4.copyString());
-    printf("%c\n", tes4[8]);
-    printf("%d\n", tes4.len());
-    tes4[2] = 'd';
-    tes4.setChar(1, 'a');
-    tes4.addChar('x');
-    tes4.addString("yyyy");
-    printf("%c\n", tes4[8]);
-    puts(tes4.copyString());
+    JHash jh(1024, "./hash.txt", true);
+    jh.addDoc("adsdasdasdsadasdasdawasadas");
+    jh.save();
 }
