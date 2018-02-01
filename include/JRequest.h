@@ -7,21 +7,29 @@
 
 #ifndef _JREQUEST_H
 #define _JREQUEST_H
+#include <iostream>
+#include <string>
+#include <list>
+#include <map>
+using std::string;
+using std::list;
+using std::map;
 class JRequest {
 public:
     JRequest(string url);
     ~JRequest();
-
-    JRequest& run();
+    void setHead(string key, string value);
+    string& getHtml();
+    void run();
 
 protected:
     virtual void parseUrl();
-private:
 
 private:
-    string                              resHead;                        // 返回的头信息
+    string                              url;                            // 要请求的url
+    string                              uniqCode;                       // 唯一识别码
     string                              resHtml;                        // 返回的html
     list<string>                        urlList;                        // 解析获取的url列表
-    map<string, string>                 reqHead;                        // 请求头
+    map<string, string>                 reqHead;                        // 设置请求头
 };
 #endif

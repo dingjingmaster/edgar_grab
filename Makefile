@@ -1,36 +1,36 @@
 CC = gcc
 CPP = g++
 
-CUR = $(shell pwd)
-HEAD = -I $(CUR)/include/
-TEST = $(CUR)/test/
+cur = $(shell pwd)
+head = -I $(cur)/include/
+test = $(cur)/test/
 
-SRC = $(wildcard src/*.cc)
-OBJ = $(patsubst %.cc, %.o, $(SRC))
+lib = -L $(cur)/lib\
+	  -lcurl\
+	  -lxml
 
-STRING = $(CUR)/test/strings_test.o
-HASH = $(CUR)
+src = $(wildcard src/*.cc)
+obj = $(patsubst %.cc, %.o, $(src))
 
-TESTSRC = $(wildcard test/*.cc)
-TESTOBJ = $(patsubst %.cc, %.o, $(TESTSRC))
-TESTTARGET = $(patsubst %.cc, %.run, $(TESTSRC))
+test_src = $(wildcard test/*.cc)
+test_obj = $(patsubst %.cc, %.o, $(test_src))
+test_target = $(patsubst %.cc, %.run, $(test_src))
 
 all:
 
+test : $(test_target)
 
-test : $(TESTTARGET)
 
-
-%.run : %.o $(OBJ)
-	$(CPP) -o $@ $^
+%.run : %.o $(obj)
+	$(CPP) -o $@ $^ $(lib)
 
 %.o : %.cc
-	$(CPP) -o $@ -c $< $(HEAD)
+	$(CPP) -o $@ -c $< $(head)
 
 
 clean: 
-	-rm -fr $(OBJ)
-	-rm -fr $(TESTOBJ)
-	-rm -fr $(TESTTARGET)
+	-rm -fr $(obj)
+	-rm -fr $(test_obj)
+	-rm -fr $(test_target)
 
 .PHONY : clean
