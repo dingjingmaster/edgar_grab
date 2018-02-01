@@ -27,7 +27,6 @@ protected:
 
 private:
     string                              url;                            // 要请求的url
-    string                              uniqCode;                       // 唯一识别码
     string                              resHtml;                        // 返回的html
     list<string>                        urlList;                        // 解析获取的url列表
     map<string, string>                 reqHead;                        // 设置请求头

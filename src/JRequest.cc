@@ -83,8 +83,6 @@ void JRequest::run() {
 
     // 获取链接
     parseUrl();
-
-
 }
 
 void urlNorm(string& str) {
@@ -104,10 +102,8 @@ void urlNorm(string& str) {
         } 
         ++ i;
     }
-
     str.clear();
     str.append(buf);
-
 }
 
 void JRequest::parseUrl() {
@@ -122,9 +118,8 @@ void JRequest::parseUrl() {
             it ->parseAttributes();
             if(it ->attribute("href").first) {
                 string url = it -> attribute("href").second;
-                cout << url << endl;
                 urlNorm(url);
-                cout << url << endl;
+                urlList.push_back(url);
             }
         }
     }
