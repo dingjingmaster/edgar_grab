@@ -10,6 +10,4 @@
 int main() {
     JRequest req("http://www.cnys.com/");
     req.run();
-
-    std::cout << req.getHtml() << std::endl;
 }

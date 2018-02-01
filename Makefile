@@ -2,14 +2,14 @@ CC = gcc
 CPP = g++
 
 cur = $(shell pwd)
-head = -I $(cur)/include/
+head = -I $(cur)/include/\
+	   -I $(cur)/include/htmlcxx/
 test = $(cur)/test/
 
 lib = -L $(cur)/lib\
-	  -lcurl\
-	  -lxml
+	  -lcurl
 
-src = $(wildcard src/*.cc)
+src = $(wildcard src/*.cc src/htmlcxx/*.cc)
 obj = $(patsubst %.cc, %.o, $(src))
 
 test_src = $(wildcard test/*.cc)
