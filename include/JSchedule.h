@@ -37,14 +37,30 @@ protected:
 
 
 private:
-   // int getFd();                                                        // 重新打开文件
-   // void putUrlFilter(string& url);                                     // url放入过滤器中
-   // void putUrlQue(string& url, bool isPri);                            // url放入待采集队列中
+    void getUrlMap();                                                   // 获取已经抓取到的链接
+    //void putUrlFilter(string& url);                                     // url放入过滤器中
+    //void putUrlQue(string& url, bool isPri);                            // url放入待采集队列中
 
     /*  控制函数  */
    // string& distribute_url();                                           // 分发任务
 
 private:
+
+
+
+
+
+    mutex                                       filtMut;                // 过滤器锁
+    set<string>*                                filter;                 // url过滤, 线程安全
+
+    mutex                                       pairMut;                // 锁
+    unsigned int                                hadUrlNum;              // 已抓url数量
+    map<string, string>*                        urlPair;                // 本地与网络链表对应
+
+
+    ////////////
+
+
     unsigned int                                fdNum;                  // 一次性打开的fd数量最多不超过500
     unsigned int                                filterNum;              // 过滤器大小
     unsigned int                                retryNum;               // 重试次数
@@ -55,16 +71,12 @@ private:
 
 
 
-//    int[]                                       fds;                    // 一次性打开fd的数量, 线程安全
-
     string                                      baseUrl;                // 基础host, 不许更改
     unsigned long                               count;                  // 计数器, 线程安全
-    set<string>*                                filter;                 // url过滤, 线程安全
     queue<pair<string, int>>*                   priorUrl;               // 优先队列 url 和 文件描述符, 必须线程安全
     queue<string>*                              secUrl;                 // 低优先级 url, 高优先级没有且文件描述符有空闲才执行
 
     mutex                                       fdMut;                  // 文件描述符锁
-    mutex                                       filtMut;                // 过滤器锁
 
     unique_lock<mutex>                          priUrlLock;             // 优先队列锁
     condition_variable                          priUrlCond;             // 优先队列条件变量

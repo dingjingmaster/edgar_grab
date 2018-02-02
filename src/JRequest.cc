@@ -114,8 +114,6 @@ void JRequest::run() {
     }
     */
 
-    // 获取链接
-    //parseUrl();
 }
 
 void urlNorm(string& str) {
@@ -139,9 +137,7 @@ void urlNorm(string& str) {
     str.append(buf);
 }
 
-/*
 void JRequest::parseUrl() {
-
     HTML::ParserDom         parser;
     tree<HTML::Node> dom = parser.parseTree(*(this ->resHtml));
     for(tree<HTML::Node>::iterator it = dom.begin(); it != dom.end(); ++ it) {
@@ -151,14 +147,13 @@ void JRequest::parseUrl() {
         if(it ->tagName().compare("a") == 0) {
             it ->parseAttributes();
             if(it ->attribute("href").first) {
-                string url = it -> attribute("href").second;
-                urlNorm(url);
-                urlList.push_back(url);
+                string murl = it -> attribute("href").second;
+                urlNorm(murl);
+                addUrl(murl, false);
             }
         }
     }
 }
-*/
 
 static int write_req_cb(char* data, size_t size, size_t nmemb, string* writerData) {
     if(writerData == NULL) {
@@ -170,14 +165,11 @@ static int write_req_cb(char* data, size_t size, size_t nmemb, string* writerDat
 }
 
 void JRequest::requestLoop() {
-
     CURLcode                    code;
-
     while(true) {
         if(this ->canExit) {
             break;
         }
-
         // 设置url 优先爬取 最好做成条件变量
         do {
             if(!priUrl ->empty()){
@@ -207,7 +199,7 @@ void JRequest::requestLoop() {
         if(CURLE_OK != code) {
             cout << "下载html失败" << endl;
         }
-        
+        parseUrl();                                                     // 获取链接
         saveFile();                                                     // 放到本地
         url.clear();                                                    // 完成请求后清空url
     }

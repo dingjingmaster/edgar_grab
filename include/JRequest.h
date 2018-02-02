@@ -28,7 +28,7 @@ public:
     void run();
 
 protected:
-    //virtual void parseUrl();
+    virtual void parseUrl();
     virtual void requestLoop();
 
 private:
