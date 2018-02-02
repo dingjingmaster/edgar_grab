@@ -4,6 +4,10 @@
 > Mail    : dingjing@live.cn
 > Created Time: 2018年02月01日 星期四 17时39分59秒
  ************************************************************************/
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "JSchedule.h"
 
 JSchedule::JSchedule() {
@@ -11,6 +15,10 @@ JSchedule::JSchedule() {
     filter = new set<string>;                                           // url过滤表
     urlPair = new map<string, string>;                                  // 网络 url 与本地路径
     hadUrlNum = 0;
+    canExit = false;
+    if((pairFIFO = open(reqSchFifo.c_str(), O_RDONLY)) < 0) {
+        // 打开失败
+    }
 
     /*
     if(fdNum > 500 || fdNum <= 0) {
@@ -36,8 +44,24 @@ JSchedule::~JSchedule() {
     */
 }
 
+void JSchedule::getUrlPair() {
+    char        urlPairTmp[4096] = {0};
+    while(true){
+        if(!canExit) {
+            break;
+        }
+        // 读取
+        memset(urlPairTmp, 0, 4096);
+        read_line(pairFIFO, urlPairTmp);
+        
+    }
+} 
 
 
+
+void JSchedule::run() {
+
+}
 
 
 

@@ -14,6 +14,20 @@
 #include "JFlag.h"
 #include "JIO.h"
 
+int read_line(int fd, char* line) {
+    int         ret = 0;
+    char        tmp = 0;
+
+    while(read(fd, tmp, 1) > 0) {
+        if(tmp == '\n') {
+            break;
+        }
+        strcat(line, tmp);
+    }
+
+    return J_OK;
+}
+
 int create_fifo(const char* filename) {
     if(mkfifo(filename, O_CREAT | O_EXCL) < 0) {
         return J_ERR;

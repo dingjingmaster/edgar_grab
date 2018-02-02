@@ -26,7 +26,7 @@ class JSchedule {
 public:
     JSchedule();
     ~JSchedule();
-//    void run();                                                         // 程序入口
+    void run();                                                         // 程序入口
 
 protected:
 //    virtual void request();                                             // 请求
@@ -37,7 +37,7 @@ protected:
 
 
 private:
-    void getUrlMap();                                                   // 获取已经抓取到的链接
+    void getUrlPair();                                                    // 获取已经抓取到的链接
     //void putUrlFilter(string& url);                                     // url放入过滤器中
     //void putUrlQue(string& url, bool isPri);                            // url放入待采集队列中
 
@@ -46,9 +46,10 @@ private:
 
 private:
 
+    bool                                        canExit;                // 是否准备退出
 
-
-
+    int                                         pairFIFO;               //
+    string                                      reqSchFifo;             // req sch 管道
 
     mutex                                       filtMut;                // 过滤器锁
     set<string>*                                filter;                 // url过滤, 线程安全
@@ -58,8 +59,11 @@ private:
     map<string, string>*                        urlPair;                // 本地与网络链表对应
 
 
-    ////////////
 
+
+
+
+    ////////////
 
     unsigned int                                fdNum;                  // 一次性打开的fd数量最多不超过500
     unsigned int                                filterNum;              // 过滤器大小
