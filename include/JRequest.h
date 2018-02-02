@@ -9,26 +9,46 @@
 #define _JREQUEST_H
 #include <iostream>
 #include <string>
+#include <queue>
+#include <mutex>
 #include <list>
 #include <map>
-using std::string;
-using std::list;
-using std::map;
+#include "JIO.h"
+#include "JFlag.h"
+#include "curl/curl.h"
+
+using namespace std;
+
 class JRequest {
 public:
-    JRequest(string url);
+    JRequest();
     ~JRequest();
     void setHead(string key, string value);
-    string& getHtml();
+    void addUrl(string url, bool priority);
     void run();
 
 protected:
-    virtual void parseUrl();
+    //virtual void parseUrl();
+    virtual void requestLoop();
 
 private:
-    string                              url;                            // 要请求的url
-    string                              resHtml;                        // 返回的html
-    list<string>                        urlList;                        // 解析获取的url列表
+    void saveFile();
+    void setUrl(string url);
+
+private:
+    CURL*                               curlHandle;                     // curl handle
+
+    unsigned int                        seriesNum;                      // 编号
+    string                              tempDir;                        // 临时文件存储
+
+    bool                                canExit;                        // 是否可以退出
+    bool                                exited;                         // 是否已经退出
+
+    queue<string>*                      priUrl;                         // 优先队列
+    queue<string>*                      secUrl;                         // 第二优先队列
+    mutex                               urlLock;                        // url队列锁
+
+    string*                             resHtml;                        // 返回的html
     map<string, string>                 reqHead;                        // 设置请求头
 };
 #endif

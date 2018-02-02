@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include "JRequest.h"
 int main() {
-    JRequest req("http://www.cnys.com/");
+    JRequest req;
+    req.addUrl("www.cnys.com", true);
+
     req.run();
 }

@@ -29,6 +29,7 @@ test : $(test_target)
 
 
 clean: 
+	-rm -fr "./temp"
 	-rm -fr $(obj)
 	-rm -fr $(test_obj)
 	-rm -fr $(test_target)

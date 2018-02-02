@@ -8,27 +8,34 @@
 #include <errno.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 #include "JFlag.h"
 #include "JIO.h"
 
-int write_all(int fd, char* buf) {
-    int pos = 0;
-    int count = strlen(buf);
-    while (pos < count) {
-        int i = write(fd, buf + pos, count - pos);
-        if (-1 == i) {
-            if(EINTR != errno) {                                        // 信号中断,没写成功
-                pos = count + 1;
-            }
-        } else {
-            pos += 1;
+int create_dir(const char* dirName) {
+    if(access(dirName, 0) == -1) {
+        if(mkdir(dirName, 0770)) {
+            // 创建失败
+            return J_ERR;
         }
     }
 
-    return pos != count ? J_ERR : J_OK;
+    return J_OK;
 }
 
-int write_buff(int fd, char* buf, int size) {
+int write_all(int fd, const char* buf) {
+    int pos = 0;
+    int count = strlen(buf);
+    int ret = write(fd, buf + pos, count - pos);
+    if (ret < 0) {
+        return J_ERR;
+    }
+
+    return J_OK;
+}
+
+int write_buff(int fd, const char* buf, int size) {
     int pos = 0;
     while(pos < size) {
         int i = write(fd, buf + pos, size - pos);

@@ -11,8 +11,9 @@
 extern "C" {
 #endif
 
-int write_all(int fd, char* buf);
-int write_buff(int fd, char* buf, int size);
+int create_dir(const char* dirname);
+int write_all(int fd, const char* buf);
+int write_buff(int fd, const char* buf, int size);
 
 
 

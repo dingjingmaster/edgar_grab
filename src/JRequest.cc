@@ -6,54 +6,99 @@
  ************************************************************************/
 #include <stdio.h>
 #include <cstring>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "JRequest.h"
-#include "htmlcxx/html/ParserDom.h"
 #include "curl/curl.h"
+#include "htmlcxx/html/ParserDom.h"
+
+static int write_req_cb(char* data, size_t size, size_t nmemb, string* writerData);
 
 using namespace std;
 using namespace htmlcxx;
 
-static int write_req_cb(char* data, size_t size, size_t nmemb, string* writerData) {
-    if(writerData == NULL) {
-        return 0;
+JRequest::JRequest() {
+    seriesNum = 0;
+    exited = false;
+    canExit = false;
+    resHtml = new string;
+    priUrl = new queue<string>;
+    secUrl = new queue<string>;
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curlHandle = curl_easy_init();
+    if(NULL == curlHandle) {
+        cout << "curl 初始化失败" << endl;
     }
-    writerData ->append(data, size * nmemb);
-
-    return size * nmemb;
+    if(tempDir.empty()) {
+        tempDir = "./temp/";
+    }
+    if(J_OK != create_dir(tempDir.c_str())) {
+        // 创建失败
+    }
 }
 
-JRequest::JRequest(string url) {
-    this ->url = url;
+JRequest::~JRequest() {
+    delete[] resHtml;
+    delete[] priUrl;
+    delete[] secUrl;
+    curl_easy_cleanup(curlHandle);
+}
+
+void JRequest::addUrl(string url, bool priority) {
+
+    urlLock.lock();
+    if(priority) {
+        priUrl ->push(url);
+    } else {
+        secUrl ->push(url);
+    }
+    urlLock.unlock();
 }
 
 void JRequest::setHead(string key, string value) {
+
 }
 
-string& JRequest::getHtml() {
-    return resHtml;
+void JRequest::saveFile() {
+    if(resHtml ->length() > 0) {
+        char                    buf[100] = {0};
+        snprintf(buf, 100, "%08u", seriesNum);
+        string path = tempDir + "/" + string(buf) + ".html";
+        int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0660);
+        cout << *resHtml << endl;
+        if(fd > 0) {
+            int tim = 5;
+            int ret = J_ERR;
+            do {
+                ret = write_all(fd, this ->resHtml ->c_str());
+                -- tim;
+            } while (ret != J_OK || tim < 0);
+            ++ seriesNum;
+            this ->resHtml ->clear();
+            close(fd);
+        } else {
+            cout << "打开失败" << endl;
+        }
+    }
 }
 
 void JRequest::run() {
 
-    CURL*                       handle;
     CURLcode                    code;
 
-    curl_global_init(CURL_GLOBAL_DEFAULT);
-
-    handle = curl_easy_init();
-    if(NULL == handle) {
-        //error
-        //return NULL;
-    }
-    
-    // 设置url
-    code = curl_easy_setopt(handle, CURLOPT_URL, this ->url.c_str());
+    // 设置读取html
+    code = curl_easy_setopt(curlHandle, CURLOPT_WRITEFUNCTION, write_req_cb);
     if(CURLE_OK != code) {
-    cout << "url失败" << endl;
-        //
-        //return NULL;
+        cout << "cb失败" << endl;
     }
 
+    // 获取网页信息 并保存
+    cout << "loop beg"<< endl;
+    requestLoop();
+    cout << "loop fin"<< endl;
     // 设置头
     /*
     code = curl_easy_setopt(handle, CURLOPT_URL, this ->url.c_str());
@@ -63,26 +108,8 @@ void JRequest::run() {
     }
     */
 
-    // 设置读取html
-    code = curl_easy_setopt(handle, CURLOPT_WRITEFUNCTION, write_req_cb);
-    if(CURLE_OK != code) {
-        //
-    cout << "cb失败" << endl;
-        //return NULL;
-    }
-
-    code = curl_easy_setopt(handle, CURLOPT_WRITEDATA, this ->resHtml);
-    if(CURLE_OK != code) {
-    cout << "resHtml失败" << endl;
-        //
-        //return NULL;
-    }
-
-    code = curl_easy_perform(handle);
-    curl_easy_cleanup(handle);
-
     // 获取链接
-    parseUrl();
+    //parseUrl();
 }
 
 void urlNorm(string& str) {
@@ -106,10 +133,11 @@ void urlNorm(string& str) {
     str.append(buf);
 }
 
+/*
 void JRequest::parseUrl() {
 
     HTML::ParserDom         parser;
-    tree<HTML::Node> dom = parser.parseTree(this ->resHtml);
+    tree<HTML::Node> dom = parser.parseTree(*(this ->resHtml));
     for(tree<HTML::Node>::iterator it = dom.begin(); it != dom.end(); ++ it) {
         if(!it ->isTag()) {
             continue;
@@ -124,7 +152,73 @@ void JRequest::parseUrl() {
         }
     }
 }
+*/
 
-JRequest::~JRequest() {
+static int write_req_cb(char* data, size_t size, size_t nmemb, string* writerData) {
+    if(writerData == NULL) {
+        return 0;
+    }
+    writerData ->append(data, size * nmemb);
+
+    return size * nmemb;
 }
+
+void JRequest::requestLoop() {
+
+    CURLcode                    code;
+    string                      url;
+
+    while(true) {
+        if(this ->canExit) {
+            break;
+        }
+
+        // 设置url 优先爬取 最好做成条件变量
+        do {
+            if(!priUrl ->empty()){
+                urlLock.lock();
+                url = priUrl ->front();
+                priUrl ->pop();
+                urlLock.unlock();
+            } else if(! secUrl ->empty()) {
+                urlLock.lock();
+                url = secUrl ->front();
+                secUrl ->pop();
+                urlLock.unlock();
+            }
+        } while(url.empty());
+
+        cout << "开始请求" << endl;
+
+        code = curl_easy_setopt(curlHandle, CURLOPT_URL, url.c_str());
+        if(CURLE_OK != code) {
+            cout << "url失败" << endl;
+        }
+
+        code = curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, this ->resHtml);
+        if(CURLE_OK != code) {
+            cout << "resHtml失败" << endl;
+        }
+
+        code = curl_easy_perform(curlHandle);
+        if(CURLE_OK != code) {
+            cout << "下载html失败" << endl;
+        }
+        
+        saveFile();                                                     // 放到本地
+        cout << "保存成功" << endl;
+        url.clear();                                                    // 完成请求后清空url
+    }
+
+    exited = true;
+}
+
+
+
+
+
+
+
+
+
 
