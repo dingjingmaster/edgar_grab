@@ -38,12 +38,16 @@ private:
 private:
     CURL*                               curlHandle;                     // curl handle
 
+    int                                 toSchedule;                     // 管道
+    string                              toSchFIFO;                      // 管道
+
     unsigned int                        seriesNum;                      // 编号
     string                              tempDir;                        // 临时文件存储
 
     bool                                canExit;                        // 是否可以退出
     bool                                exited;                         // 是否已经退出
 
+    string                              url;                            // 正在使用的url
     queue<string>*                      priUrl;                         // 优先队列
     queue<string>*                      secUrl;                         // 第二优先队列
     mutex                               urlLock;                        // url队列锁

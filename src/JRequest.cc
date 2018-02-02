@@ -35,8 +35,15 @@ JRequest::JRequest() {
     if(tempDir.empty()) {
         tempDir = "./temp/";
     }
+    toSchFIFO = tempDir + "/" + "req_sche";
     if(J_OK != create_dir(tempDir.c_str())) {
         // 创建失败
+    }
+    if(J_OK != create_fifo(toSchFIFO.c_str())) {
+        // 创建失败
+    }
+    if(toSchedule = open(toSchFIFO.c_str(), O_WRONLY, 0) < 0) {
+        // 打开失败
     }
 }
 
@@ -67,8 +74,8 @@ void JRequest::saveFile() {
         char                    buf[100] = {0};
         snprintf(buf, 100, "%08u", seriesNum);
         string path = tempDir + "/" + string(buf) + ".html";
+        string pathPair = url + "{]" + path + "\n";
         int fd = open(path.c_str(), O_CREAT | O_WRONLY | O_TRUNC, 0660);
-        cout << *resHtml << endl;
         if(fd > 0) {
             int tim = 5;
             int ret = J_ERR;
@@ -79,6 +86,7 @@ void JRequest::saveFile() {
             ++ seriesNum;
             this ->resHtml ->clear();
             close(fd);
+            write_all(toSchedule, pathPair.c_str());              // 写管道
         } else {
             cout << "打开失败" << endl;
         }
@@ -96,9 +104,7 @@ void JRequest::run() {
     }
 
     // 获取网页信息 并保存
-    cout << "loop beg"<< endl;
     requestLoop();
-    cout << "loop fin"<< endl;
     // 设置头
     /*
     code = curl_easy_setopt(handle, CURLOPT_URL, this ->url.c_str());
@@ -166,7 +172,6 @@ static int write_req_cb(char* data, size_t size, size_t nmemb, string* writerDat
 void JRequest::requestLoop() {
 
     CURLcode                    code;
-    string                      url;
 
     while(true) {
         if(this ->canExit) {
@@ -188,8 +193,6 @@ void JRequest::requestLoop() {
             }
         } while(url.empty());
 
-        cout << "开始请求" << endl;
-
         code = curl_easy_setopt(curlHandle, CURLOPT_URL, url.c_str());
         if(CURLE_OK != code) {
             cout << "url失败" << endl;
@@ -206,7 +209,6 @@ void JRequest::requestLoop() {
         }
         
         saveFile();                                                     // 放到本地
-        cout << "保存成功" << endl;
         url.clear();                                                    // 完成请求后清空url
     }
 

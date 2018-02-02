@@ -10,8 +10,17 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <fcntl.h>
 #include "JFlag.h"
 #include "JIO.h"
+
+int create_fifo(const char* filename) {
+    if(mkfifo(filename, O_CREAT | O_EXCL) < 0) {
+        return J_ERR;
+    }
+
+    return J_OK;
+}
 
 int create_dir(const char* dirName) {
     if(access(dirName, 0) == -1) {

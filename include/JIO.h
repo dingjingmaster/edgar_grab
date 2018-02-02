@@ -12,6 +12,7 @@ extern "C" {
 #endif
 
 int create_dir(const char* dirname);
+int create_fifo(const char* dirname);
 int write_all(int fd, const char* buf);
 int write_buff(int fd, const char* buf, int size);
 
