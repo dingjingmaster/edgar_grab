@@ -18,11 +18,11 @@ int read_line(int fd, char* line) {
     int         ret = 0;
     char        tmp = 0;
 
-    while(read(fd, tmp, 1) > 0) {
+    while(read(fd, &tmp, 1) > 0) {
         if(tmp == '\n') {
             break;
         }
-        strcat(line, tmp);
+        strcat(line, &tmp);
     }
 
     return J_OK;

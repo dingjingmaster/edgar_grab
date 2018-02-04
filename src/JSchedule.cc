@@ -4,8 +4,10 @@
 > Mail    : dingjing@live.cn
 > Created Time: 2018年02月01日 星期四 17时39分59秒
  ************************************************************************/
-#include <unistd.h>
+#include <JIO.h>
 #include <fcntl.h>
+#include <cstring>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "JSchedule.h"

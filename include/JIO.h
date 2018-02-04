@@ -11,6 +11,7 @@
 extern "C" {
 #endif
 
+int read_line(int fd, char* tmp);
 int create_dir(const char* dirname);
 int create_fifo(const char* dirname);
 int write_all(int fd, const char* buf);

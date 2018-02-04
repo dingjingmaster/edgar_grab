@@ -13,6 +13,7 @@
 #include <mutex>
 #include <list>
 #include <map>
+#include <set>
 #include "JIO.h"
 #include "JFlag.h"
 #include "curl/curl.h"
@@ -40,6 +41,8 @@ private:
 
     int                                 toSchedule;                     // 管道
     string                              toSchFIFO;                      // 管道
+
+    set<string>*                        filter;                         // 过滤器
 
     unsigned int                        seriesNum;                      // 编号
     string                              tempDir;                        // 临时文件存储

@@ -25,6 +25,7 @@ JRequest::JRequest() {
     exited = false;
     canExit = false;
     resHtml = new string;
+    filter = new set<string>;
     priUrl = new queue<string>;
     secUrl = new queue<string>;
     curl_global_init(CURL_GLOBAL_DEFAULT);
@@ -166,6 +167,7 @@ static int write_req_cb(char* data, size_t size, size_t nmemb, string* writerDat
 
 void JRequest::requestLoop() {
     CURLcode                    code;
+    set<string>::iterator       it;
     while(true) {
         if(this ->canExit) {
             break;
@@ -183,12 +185,18 @@ void JRequest::requestLoop() {
                 secUrl ->pop();
                 urlLock.unlock();
             }
+            // 检测是否已爬取
+            it = filter->find(url);
+            if(it != filter->end()) {
+                url.clear();
+            }
         } while(url.empty());
 
         code = curl_easy_setopt(curlHandle, CURLOPT_URL, url.c_str());
         if(CURLE_OK != code) {
             cout << "url失败" << endl;
         }
+        filter->insert(url);
 
         code = curl_easy_setopt(curlHandle, CURLOPT_WRITEDATA, this ->resHtml);
         if(CURLE_OK != code) {
