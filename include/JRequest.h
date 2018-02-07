@@ -7,16 +7,22 @@
 
 #ifndef _JREQUEST_H
 #define _JREQUEST_H
-#include <iostream>
-#include <string>
+#include <set>
 #include <queue>
 #include <mutex>
-#include <list>
-#include <map>
-#include <set>
-#include "JIO.h"
-#include "JFlag.h"
+#include <string>
+#include <stdio.h>
+#include <cstring>
+#include <fcntl.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <iostream>
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include "curl/curl.h"
+#include "htmlcxx/html/ParserDom.h"
+
 
 using namespace std;
 
@@ -39,23 +45,28 @@ private:
 private:
     CURL*                               curlHandle;                     // curl handle
 
-    int                                 toSchedule;                     // 管道
-    string                              toSchFIFO;                      // 管道
-
-    set<string>*                        filter;                         // 过滤器
+    bool                                canExit;                        // 是否可以退出
+    bool                                exited;                         // 是否已经退出
 
     unsigned int                        seriesNum;                      // 编号
     string                              tempDir;                        // 临时文件存储
 
-    bool                                canExit;                        // 是否可以退出
-    bool                                exited;                         // 是否已经退出
-
     string                              url;                            // 正在使用的url
-    queue<string>*                      priUrl;                         // 优先队列
-    queue<string>*                      secUrl;                         // 第二优先队列
-    mutex                               urlLock;                        // url队列锁
 
     string*                             resHtml;                        // 返回的html
     map<string, string>                 reqHead;                        // 设置请求头
+    set<string>*                        filter;                         // 过滤器
+
+unsigned int                getUrlNum;                                  // 获取到的url数量
+
+
+queue<string>*              priUrl;                                     // 优先队列
+queue<string>*              secUrl;                                     // 第二优先队列
+mutex                       urlLock;                                    // 队列锁
+
+map<string, string>*        urlPair;                                    // 请求
+
+
+
 };
 #endif

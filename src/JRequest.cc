@@ -4,16 +4,9 @@
 > Mail    : dingjing@live.cn
 > Created Time: 2018年02月01日 星期四 09时47分11秒
  ************************************************************************/
-#include <stdio.h>
-#include <cstring>
-#include <fcntl.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-
 #include "JRequest.h"
-#include "curl/curl.h"
-#include "htmlcxx/html/ParserDom.h"
+#include "JIO.h"
+#include "JFlag.h"
 
 static int write_req_cb(char* data, size_t size, size_t nmemb, string* writerData);
 
@@ -26,8 +19,6 @@ JRequest::JRequest() {
     canExit = false;
     resHtml = new string;
     filter = new set<string>;
-    priUrl = new queue<string>;
-    secUrl = new queue<string>;
     curl_global_init(CURL_GLOBAL_DEFAULT);
     curlHandle = curl_easy_init();
     if(NULL == curlHandle) {
@@ -36,22 +27,12 @@ JRequest::JRequest() {
     if(tempDir.empty()) {
         tempDir = "./temp/";
     }
-    toSchFIFO = tempDir + "/" + "req_sche";
-    if(J_OK != create_dir(tempDir.c_str())) {
-        // 创建失败
-    }
-    if(J_OK != create_fifo(toSchFIFO.c_str())) {
-        // 创建失败
-    }
-    if(toSchedule = open(toSchFIFO.c_str(), O_WRONLY, 0) < 0) {
-        // 打开失败
-    }
 }
 
 JRequest::~JRequest() {
+
     delete[] resHtml;
-    delete[] priUrl;
-    delete[] secUrl;
+    delete[] filter;
     curl_easy_cleanup(curlHandle);
 }
 
@@ -85,9 +66,8 @@ void JRequest::saveFile() {
                 -- tim;
             } while (ret != J_OK || tim < 0);
             ++ seriesNum;
-            this ->resHtml ->clear();
             close(fd);
-            write_all(toSchedule, pathPair.c_str());              // 写管道
+            this ->resHtml ->clear();
         } else {
             cout << "打开失败" << endl;
         }
@@ -185,12 +165,15 @@ void JRequest::requestLoop() {
                 secUrl ->pop();
                 urlLock.unlock();
             }
+
             // 检测是否已爬取
             it = filter->find(url);
             if(it != filter->end()) {
-                url.clear();
+        //        url.clear();
             }
         } while(url.empty());
+
+        cout << "请求的url: " + url << endl;
 
         code = curl_easy_setopt(curlHandle, CURLOPT_URL, url.c_str());
         if(CURLE_OK != code) {
@@ -207,6 +190,8 @@ void JRequest::requestLoop() {
         if(CURLE_OK != code) {
             cout << "下载html失败" << endl;
         }
+        cout << *resHtml << endl;
+
         parseUrl();                                                     // 获取链接
         saveFile();                                                     // 放到本地
         url.clear();                                                    // 完成请求后清空url

@@ -7,7 +7,6 @@
 #ifndef _JSCHEDULE_H
 #define _JSCHEDULE_H
 #include <map>
-#include <set>
 #include <list>
 #include <mutex>
 #include <queue>
@@ -15,7 +14,7 @@
 #include <string>
 #include <iostream>
 #include <condition_variable>
-
+/*
 #include "JRequest.h"
 
 using namespace std;
@@ -29,30 +28,29 @@ public:
     void run();                                                         // 程序入口
 
 protected:
-//    virtual void request();                                             // 请求
-  //  virtual void download();                                            // 下载器
-   // virtual void parse();                                               // 解析
-   // virtual void outfile();                                             // 输出到文件
-   // virtual void routine();                                             // 每个线程都执行的
-
+    virtual void request_init();                                        // request参数初始化
+    virtual void schedule_init();                                       // schedule参数初始化
 
 private:
+    JRequest*                               request;
     void getUrlPair();                                                    // 获取已经抓取到的链接
+
     //void putUrlFilter(string& url);                                     // url放入过滤器中
     //void putUrlQue(string& url, bool isPri);                            // url放入待采集队列中
-
+*/
     /*  控制函数  */
    // string& distribute_url();                                           // 分发任务
 
+/*
 private:
 
     bool                                        canExit;                // 是否准备退出
+    string                                      startUrl;               // 开始采集url
 
     int                                         pairFIFO;               //
     string                                      reqSchFifo;             // req sch 管道
 
     mutex                                       filtMut;                // 过滤器锁
-    set<string>*                                filter;                 // url过滤, 线程安全
 
     mutex                                       pairMut;                // 锁
     unsigned int                                hadUrlNum;              // 已抓url数量
@@ -70,7 +68,6 @@ private:
     unsigned int                                retryNum;               // 重试次数
     unsigned int                                interval;               // 请求间隔时间
     unsigned int                                threadNum;              // 线程数
-    string                                      startUrl;               // 开始采集url
 
 
 
@@ -93,4 +90,5 @@ private:
     // 文件输出
     // 持久化输出 -- 数据库 
 };
+*/
 #endif
