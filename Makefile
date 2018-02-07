@@ -2,13 +2,19 @@ CC = gcc
 CPP = g++
 
 cur = $(shell pwd)
+
 head = -I $(cur)/include/\
-	   -I $(cur)/include/htmlcxx/
+	   -I $(cur)/include/htmlcxx/\
+	   -I $(cur)/include/zlog/
+
 test = $(cur)/test/
 
 lib = -L $(cur)/lib\
 	  -lcurl\
 	  -lpthread
+
+zlog_src = $(wildcard src/zlog/*.c)
+zlog_obj = $(patsubst %.c, %.o, $(zlog_src))
 
 src = $(wildcard src/*.cc src/htmlcxx/*.cc)
 obj = $(patsubst %.cc, %.o, $(src))
@@ -19,7 +25,7 @@ test_src = $(wildcard test/*.cc)
 test_obj = $(patsubst %.cc, %.o, $(test_src))
 test_target = $(patsubst %.cc, %.run, $(test_src))
 
-$(target): $(obj) $(main)
+$(target): $(obj) $(main) $(zlog_obj)
 	$(CPP) -o $@ $^ $(lib)
 
 all:
@@ -36,12 +42,16 @@ test : $(test_target)
 %.o : %.cpp
 	$(CPP) -o $@ -c $< $(head)
 
+%.o : %.c
+	$(CC) -o $@ -c $< $(head)
+
 clean: 
-	-rm -fr temp
-	-rm -fr $(obj)
-	-rm -fr $(main)
+	-rm -fr .temp
 	-rm -fr $(target)
-	-rm -fr $(test_obj)
+	-rm -fr $(main)
+	-rm -fr $(obj)
 	-rm -fr $(test_target)
+	-rm -fr $(zlog_obj)
+	-rm -fr $(test_obj)
 
 .PHONY : clean
