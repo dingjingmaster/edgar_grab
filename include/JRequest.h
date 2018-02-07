@@ -23,7 +23,6 @@
 #include "curl/curl.h"
 #include "htmlcxx/html/ParserDom.h"
 
-
 using namespace std;
 
 class JRequest {
@@ -44,6 +43,7 @@ private:
 
 private:
     CURL*                               curlHandle;                     // curl handle
+    unsigned int                        getUrlNum;                      // 获取到的url数量
 
     bool                                canExit;                        // 是否可以退出
     bool                                exited;                         // 是否已经退出
@@ -57,16 +57,13 @@ private:
     map<string, string>                 reqHead;                        // 设置请求头
     set<string>*                        filter;                         // 过滤器
 
-unsigned int                getUrlNum;                                  // 获取到的url数量
 
+    queue<string>*                      priUrl;                         // 优先队列
+    queue<string>*                      secUrl;                         // 第二优先队列
+    mutex                               urlLock;                        // 队列锁
 
-queue<string>*              priUrl;                                     // 优先队列
-queue<string>*              secUrl;                                     // 第二优先队列
-mutex                       urlLock;                                    // 队列锁
+    map<string, string>*                urlPair;                        // 请求
 
-map<string, string>*        urlPair;                                    // 请求
-
-
-
+    friend class JSchedule;
 };
 #endif
