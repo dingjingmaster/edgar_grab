@@ -25,7 +25,9 @@ test_src = $(wildcard test/*.cc)
 test_obj = $(patsubst %.cc, %.o, $(test_src))
 test_target = $(patsubst %.cc, %.run, $(test_src))
 
-$(target): $(obj) $(main) $(zlog_obj)
+
+$(target): $(obj) $(main) $(zlog_obj) 
+	-mkdir log
 	$(CPP) -o $@ $^ $(lib)
 
 all:
@@ -47,6 +49,7 @@ test : $(test_target)
 
 clean: 
 	-rm -fr save
+	-rm -fr log
 	-rm -fr $(target)
 	-rm -fr $(main)
 	-rm -fr $(obj)
@@ -54,4 +57,4 @@ clean:
 	-rm -fr $(zlog_obj)
 	-rm -fr $(test_obj)
 
-.PHONY : clean
+.PHONY : clean 

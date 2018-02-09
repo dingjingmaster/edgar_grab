@@ -9,10 +9,48 @@
 #include <cstring>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <sys/stat.h>
+#include <thread>
 #include "JSchedule.h"
-/*
+#include "JLog.h"
 
+using namespace std;
+
+JSchedule::JSchedule() {
+    request = new JRequest;
+}
+
+JSchedule::~JSchedule() {
+    //delete[] request;
+}
+
+void JSchedule::setStartUrl(string url) {
+    request ->addUrl(url, true);
+}
+
+void JSchedule::request_init() {
+    pid_t                   pid;
+
+    pid = fork();
+    if(pid < 0) {
+        ERROR("JSchedule fork error...");
+    } else if(pid > 0) {
+        DEBUG("JSchedule fork parent...");
+        int status;
+        cout << "req 开始" << endl;
+        wait(&status);
+    } else {
+        request ->run();
+    }
+
+}
+
+void JSchedule::run(){
+    request_init();
+}
+
+/*
 void insert_urlpair(string& url);
 
 JSchedule::JSchedule() {

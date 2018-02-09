@@ -52,6 +52,7 @@ private:
     unsigned int                        seriesNum;                      // 编号
     mutex                               seriesLock;                     // 编号锁
 
+    string                              logDir;                         // 日志路径
     string                              tempDir;                        // 临时文件存储
 
     set<string>*                        filter;                         // 过滤器

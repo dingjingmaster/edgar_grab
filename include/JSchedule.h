@@ -14,6 +14,25 @@
 #include <string>
 #include <iostream>
 #include <condition_variable>
+#include "JRequest.h"
+
+using namespace std;
+
+class JSchedule {
+public:
+    JSchedule();
+    ~JSchedule();
+    void run();
+    void setStartUrl(string url);
+
+protected:
+    virtual void request_init();
+
+private:
+    string                                  startUrl;
+    JRequest*                               request;
+};
+
 /*
 #include "JRequest.h"
 

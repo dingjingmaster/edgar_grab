@@ -6,13 +6,21 @@
  ************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
-#include "JRequest.h"
+#include "JLog.h"
+#include "JSchedule.h"
+#include "JIO.h"
 
 int main(int argc, char* argv[]) {
 
-    JRequest        jreq;
-    jreq.addUrl("http://blog.csdn.net/s1234567_89/article/details/50723353", true);
-    jreq.run();
+    JSchedule           schedule;
+
+    log_init("./conf/log.conf");
+    //schedule.setStartUrl("http://blog.csdn.net/s1234567_89/article/details/50723353");
+    //schedule.run();
+    create_dirs("./temp/ssss/ok//sss.txt");
+
+
+    log_destory();
 
 
 }

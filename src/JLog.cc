@@ -8,10 +8,9 @@
 #include "JLog.h"
 #include <stdio.h>
 
-void log_init(char* confPath) {
+void log_init(const char* confPath) {
     
     if(NULL == confPath) {
-        
         ERROR("log_init error: %s", confPath);
         return ;
     }
@@ -20,9 +19,7 @@ void log_init(char* confPath) {
 
     rc = dzlog_init(confPath, "");
     if(rc) {
-        
         ERROR("dzlog_init error ret: %d", rc);
-        
         return ;
     }
 }
