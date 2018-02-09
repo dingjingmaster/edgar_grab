@@ -38,13 +38,16 @@ protected:
 
 private:
     string getUrl();
+    void routine();
     void saveHtml(string& url, string& html);
     void setUrl(string url);
-    void routine();
+    void setThreads(unsigned int num);
 
 private:
     bool                                canExit;                        // 是否可以退出
     bool                                exited;                         // 是否已经退出
+
+    unsigned int                        threads;                        // 线程
 
     unsigned int                        seriesNum;                      // 编号
     mutex                               seriesLock;                     // 编号锁

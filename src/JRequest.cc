@@ -18,12 +18,13 @@ JRequest::JRequest() {
     seriesNum = 0;
     exited = false;
     canExit = false;
+    threads = 1;
     filter = new set<string>;
     priUrl = new queue<string>;
     secUrl = new queue<string>;
     urlPair = new map<string, string>;
     if(tempDir.empty()) {
-        tempDir = ".temp/";
+        tempDir = "save/";
         create_dir(tempDir.c_str());
     }
 
@@ -39,6 +40,10 @@ JRequest::~JRequest() {
     DEBUG("JRequest 析构成功...");
 }
 
+void JRequest::setThreads(unsigned int num) {
+    threads = num;
+}
+
 void JRequest::addUrl(string url, bool priority) {
 
     urlLock.lock();
@@ -52,9 +57,9 @@ void JRequest::addUrl(string url, bool priority) {
 }
 void JRequest::run() {
 
-    //requestLoop();析构成功
     routine();
 }
+
 void JRequest::routine() {
     CURL*                               curlHandle;                     // curl handle
     CURLcode                            code;

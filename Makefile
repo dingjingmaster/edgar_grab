@@ -46,7 +46,7 @@ test : $(test_target)
 	$(CC) -o $@ -c $< $(head)
 
 clean: 
-	-rm -fr .temp
+	-rm -fr save
 	-rm -fr $(target)
 	-rm -fr $(main)
 	-rm -fr $(obj)
