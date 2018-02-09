@@ -33,11 +33,14 @@ public:
     void run();
 
 protected:
-    virtual void parseUrl();
-    virtual void requestLoop();
+    virtual void parseUrl(string& html);
+    //virtual void requestLoop();
 
 private:
+    string getUrl();
+    void saveHtml(string& url, string& html);
     void setUrl(string url);
+    void routine();
 
 private:
     bool                                canExit;                        // 是否可以退出

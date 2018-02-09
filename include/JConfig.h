@@ -7,6 +7,9 @@
 
 #ifndef _JCONFIG_H
 #define _JCONFIG_H
+#include <iostream>
+#include <string>
+using namespace std;
 
 class JConfig {
 public:
@@ -17,6 +20,6 @@ private:
     string                      confPath;                               // 配置文件路径
 
 private:
-}
+};
 
 #endif

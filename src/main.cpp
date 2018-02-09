@@ -6,8 +6,13 @@
  ************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>
+#include "JRequest.h"
 
 int main(int argc, char* argv[]) {
+
+    JRequest        jreq;
+    jreq.addUrl("http://blog.csdn.net/s1234567_89/article/details/50723353", true);
+    jreq.run();
 
 
 }
